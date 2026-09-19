@@ -54,9 +54,6 @@ class TECameraX(
 
     private var outputSurface: Surface? = null
 
-    fun setOutputSurface(surface: Surface) {
-        outputSurface = surface
-    }
 
     private fun createPreview(): Preview {
         val preview = Preview.Builder()
@@ -110,6 +107,8 @@ class TECameraX(
 
     override fun u4() {
         super.u4()
+
+        outputSurface = Q3().LIZ()
 
         lifecycleOwner.start()
 

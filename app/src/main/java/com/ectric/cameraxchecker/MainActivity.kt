@@ -628,19 +628,16 @@ fun CameraPreview(
     onZoomLimitsDetected: (Float, Float) -> Unit
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
 
     val textureView = remember {
         TextureView(context)
     }
 
-    val tikTokBackend = remember(context, lifecycleOwner) {
+    val tikTokBackend = remember(context) {
         TikTokCameraXBackend(
-            context = context,
-            lifecycleOwner = lifecycleOwner
+            context = context
         )
     }
-
     var backendSurface by remember {
         mutableStateOf<Surface?>(null)
     }

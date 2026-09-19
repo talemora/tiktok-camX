@@ -8,12 +8,32 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 
+private class CameraBackendLifecycleOwner : LifecycleOwner {
+    private val registry = LifecycleRegistry(this)
+
+    override val lifecycle: Lifecycle
+        get() = registry
+
+    fun start() {
+        registry.currentState = Lifecycle.State.STARTED
+    }
+
+    fun stop() {
+        registry.currentState = Lifecycle.State.CREATED
+    }
+
+    fun destroy() {
+        registry.currentState = Lifecycle.State.DESTROYED
+    }
+}
 class TikTokCameraXBackend(
-    private val context: Context,
-    private val lifecycleOwner: LifecycleOwner
+    private val context: Context
 ) {
+    private val lifecycleOwner = CameraBackendLifecycleOwner()
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var outputSurface: Surface? = null
@@ -88,12 +108,16 @@ class TikTokCameraXBackend(
         preview = newPreview
 
         provider.unbindAll()
+
+        lifecycleOwner.start()
+
         camera = provider.bindToLifecycle(
             lifecycleOwner,
             selector,
             newPreview
         )
     }
+
 
     fun setZoom(ratio: Float) {
         val currentCamera = camera ?: return
@@ -114,15 +138,19 @@ class TikTokCameraXBackend(
     }
 
     fun stop() {
+        cameraProvider?.unbindAll()
+
+        camera = null
         preview = null
         outputSurface = null
-        cameraProvider?.unbindAll()
     }
 
     fun close() {
         cameraProvider?.unbindAll()
+
+        camera = null
         preview = null
         outputSurface = null
         cameraProvider = null
     }
-}
+        }

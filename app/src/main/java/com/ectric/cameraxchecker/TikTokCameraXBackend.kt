@@ -30,10 +30,12 @@ private class CameraBackendLifecycleOwner : LifecycleOwner {
         registry.currentState = Lifecycle.State.DESTROYED
     }
 }
+
 class TikTokCameraXBackend(
     private val context: Context
 ) {
     private val lifecycleOwner = CameraBackendLifecycleOwner()
+
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var outputSurface: Surface? = null
@@ -58,8 +60,11 @@ class TikTokCameraXBackend(
                 cameraProvider = providerFuture.get()
 
                 val selector = when (facing) {
-                    Facing.FRONT -> CameraSelector.DEFAULT_FRONT_CAMERA
-                    Facing.BACK -> CameraSelector.DEFAULT_BACK_CAMERA
+                    Facing.FRONT ->
+                        CameraSelector.DEFAULT_FRONT_CAMERA
+
+                    Facing.BACK ->
+                        CameraSelector.DEFAULT_BACK_CAMERA
                 }
 
                 if (!cameraProvider!!.hasCamera(selector)) {
@@ -78,15 +83,23 @@ class TikTokCameraXBackend(
         }, mainExecutor)
     }
 
-    fun start(surface: Surface, facing: Facing = Facing.BACK) {
+    fun startCapture(
+        surface: Surface,
+        facing: Facing = Facing.BACK
+    ) {
         val provider = cameraProvider
-            ?: throw IllegalStateException("Call open() before start()")
+            ?: throw IllegalStateException(
+                "Call open() before startCapture()"
+            )
 
         outputSurface = surface
 
         val selector = when (facing) {
-            Facing.FRONT -> CameraSelector.DEFAULT_FRONT_CAMERA
-            Facing.BACK -> CameraSelector.DEFAULT_BACK_CAMERA
+            Facing.FRONT ->
+                CameraSelector.DEFAULT_FRONT_CAMERA
+
+            Facing.BACK ->
+                CameraSelector.DEFAULT_BACK_CAMERA
         }
 
         val newPreview = Preview.Builder()
@@ -118,27 +131,35 @@ class TikTokCameraXBackend(
         )
     }
 
-
     fun setZoom(ratio: Float) {
         val currentCamera = camera ?: return
-        val zoomState = currentCamera.cameraInfo.zoomState.value ?: return
+
+        val zoomState =
+            currentCamera.cameraInfo.zoomState.value ?: return
+
         val clampedRatio = ratio.coerceIn(
             zoomState.minZoomRatio,
             zoomState.maxZoomRatio
         )
-        currentCamera.cameraControl.setZoomRatio(clampedRatio)
+
+        currentCamera.cameraControl.setZoomRatio(
+            clampedRatio
+        )
     }
 
     fun getZoomRange(): Pair<Float, Float>? {
-        val zoomState = camera?.cameraInfo?.zoomState?.value ?: return null
+        val zoomState =
+            camera?.cameraInfo?.zoomState?.value ?: return null
+
         return Pair(
             zoomState.minZoomRatio,
             zoomState.maxZoomRatio
         )
     }
 
-    fun stop() {
+    fun stopCapture() {
         cameraProvider?.unbindAll()
+        lifecycleOwner.stop()
 
         camera = null
         preview = null
@@ -147,10 +168,11 @@ class TikTokCameraXBackend(
 
     fun close() {
         cameraProvider?.unbindAll()
+        lifecycleOwner.destroy()
 
         camera = null
         preview = null
         outputSurface = null
         cameraProvider = null
     }
-        }
+}

@@ -671,7 +671,7 @@ fun CameraPreview(
             override fun onSurfaceTextureDestroyed(
                 surfaceTexture: SurfaceTexture
             ): Boolean {
-                tikTokBackend.stop()
+                tikTokBackend.stopCapture()
                 backendSurface?.release()
                 backendSurface = null
                 return true
@@ -703,7 +703,7 @@ fun CameraPreview(
             }
 
         tikTokBackend.open(facing) {
-            tikTokBackend.start(
+            tikTokBackend.startCapture(
                 surface = surface,
                 facing = facing
             )

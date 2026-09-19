@@ -15,6 +15,7 @@ class TikTokCameraXBackend(
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
     private var outputSurface: Surface? = null
+    private var camera: androidx.camera.core.Camera? = null
 
     private val mainExecutor
         get() = ContextCompat.getMainExecutor(context)
@@ -84,10 +85,30 @@ fun open(
         preview = newPreview
 
         provider.unbindAll()
-        provider.bindToLifecycle(
+        camera = provider.bindToLifecycle(
             lifecycleOwner,
             selector,
             newPreview
+        )
+    }
+    fun setZoom(ratio: Float) {
+        val currentCamera = camera ?: return
+
+        val zoomState = currentCamera.cameraInfo.zoomState.value ?: return
+
+        val clampedRatio = ratio.coerceIn(
+            zoomState.minZoomRatio,
+            zoomState.maxZoomRatio
+        )
+
+        currentCamera.cameraControl.setZoomRatio(clampedRatio)
+    }
+    fun getZoomRange(): Pair<Float, Float>? {
+        val zoomState = camera?.cameraInfo?.zoomState?.value ?: return null
+
+        return Pair(
+            zoomState.minZoomRatio,
+            zoomState.maxZoomRatio
         )
     }
 

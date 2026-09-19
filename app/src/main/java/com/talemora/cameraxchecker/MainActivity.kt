@@ -628,6 +628,7 @@ fun CameraPreview(
     onZoomLimitsDetected: (Float, Float) -> Unit
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val textureView = remember {
         TextureView(context)

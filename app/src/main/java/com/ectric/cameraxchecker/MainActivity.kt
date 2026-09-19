@@ -78,35 +78,6 @@ class MainActivity : ComponentActivity() {
 }
 
 
-/*
- * -------------------------------------------------------------------------
- * CameraX -> OUR SurfaceTexture bridge
- * -------------------------------------------------------------------------
- *
- * Это самая важная часть теста.
- *
- * PreviewView больше НЕ выдаёт Surface CameraX.
- *
- * CameraX:
- *
- *      SurfaceRequest
- *            ↓
- * TextureViewSurfaceProvider
- *            ↓
- * TextureView.SurfaceTexture
- *            ↓
- * Surface
- *
- * То есть мы сами отдаём CameraX Surface.
- *
- * Это уже намного ближе к тому, что понадобится для TikTok:
- *
- *      TikTok SurfaceTexture
- *            ↓
- *         Surface
- *            ↓
- *        CameraX
- */
 private class TextureViewSurfaceProvider(
     private val textureView: TextureView,
     private val executor: Executor
@@ -756,9 +727,11 @@ fun CameraPreview(
             )
         }
     }
+
     LaunchedEffect(zoomRatio) {
         tikTokBackend.setZoom(zoomRatio)
     }
+
     AndroidView(
         factory = { textureView },
         modifier = Modifier.fillMaxSize()

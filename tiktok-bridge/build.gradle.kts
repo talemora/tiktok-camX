@@ -21,8 +21,11 @@ android {
 }
 
 dependencies {
+    compileOnly(project(":tiktok-stubs"))
+
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+
     // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)

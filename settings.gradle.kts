@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "cameraX checker"
 include(":app")
 include(":tiktok-bridge")
+include(":tiktok-stubs")

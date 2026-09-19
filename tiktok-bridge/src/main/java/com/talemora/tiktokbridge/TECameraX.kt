@@ -9,11 +9,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import com.talemora.tiktokbridge.tiktokstubs.C03611Mgx
-import com.talemora.tiktokbridge.tiktokstubs.C1MiY
-import com.talemora.tiktokbridge.tiktokstubs.C1MjC
-import com.talemora.tiktokbridge.tiktokstubs.C1MjQ
-import com.talemora.tiktokbridge.tiktokstubs.C1MjR
+import X.C03611Mgx
+import X.C1MiY
+import X.C1MjC
+import X.C1MjQ
+import X.C1MjR
 import androidx.camera.core.CameraSelector
 
 class TECameraX(

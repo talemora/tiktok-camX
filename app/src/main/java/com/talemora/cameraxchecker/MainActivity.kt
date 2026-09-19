@@ -709,9 +709,9 @@ fun CameraPreview(
 
         val facing =
             if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-                TikTokCameraXBackend.Facing.FRONT
+                TikTokCameraContract.Facing.FRONT
             } else {
-                TikTokCameraXBackend.Facing.BACK
+                TikTokCameraContract.Facing.BACK
             }
 
         tikTokAdapter.setOutputSurface(surface)

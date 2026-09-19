@@ -3,15 +3,10 @@ package com.talemora.cameraxchecker
 import android.content.Context
 import android.view.Surface
 
-/**
- * Bridge between TikTok's camera contract and our CameraX backend.
- *
- * For now this is tested inside the checker.
- * Later the TikTok-specific C1MjC adapter will call this class.
- */
 class TikTokCameraAdapter(
     context: Context
-) {
+) : TikTokCameraContract {
+
     private val backend = TikTokCameraXBackend(context)
 
     private var outputSurface: Surface? = null
@@ -19,39 +14,29 @@ class TikTokCameraAdapter(
     private var facing =
         TikTokCameraXBackend.Facing.BACK
 
-    /**
-     * Future TikTok mapping:
-     *
-     * C1MjC.R4(...) -> open(...)
-     */
-    fun open(
-        facing: TikTokCameraXBackend.Facing =
-            TikTokCameraXBackend.Facing.BACK,
-        onReady: () -> Unit = {}
+    override fun open(
+        facing: TikTokCameraContract.Facing,
+        onReady: () -> Unit
     ) {
-        this.facing = facing
+        this.facing = when (facing) {
+            TikTokCameraContract.Facing.FRONT ->
+                TikTokCameraXBackend.Facing.FRONT
+
+            TikTokCameraContract.Facing.BACK ->
+                TikTokCameraXBackend.Facing.BACK
+        }
 
         backend.open(
-            facing = facing,
+            facing = this.facing,
             onReady = onReady
         )
     }
 
-    /**
-     * Later this Surface will come from:
-     *
-     * C1MjP.LIZ()
-     */
-    fun setOutputSurface(surface: Surface) {
+    override fun setOutputSurface(surface: Surface) {
         outputSurface = surface
     }
 
-    /**
-     * Future TikTok mapping:
-     *
-     * C1MjC.u4() -> startCapture()
-     */
-    fun startCapture() {
+    override fun startCapture() {
         val surface = outputSurface
             ?: throw IllegalStateException(
                 "Output Surface must be set before startCapture()"
@@ -63,12 +48,7 @@ class TikTokCameraAdapter(
         )
     }
 
-    /**
-     * Future TikTok mapping:
-     *
-     * C1MjC.J4(float, ...) -> setZoom(...)
-     */
-    fun setZoom(ratio: Float) {
+    override fun setZoom(ratio: Float) {
         backend.setZoom(ratio)
     }
 
@@ -76,19 +56,11 @@ class TikTokCameraAdapter(
         return backend.getZoomRange()
     }
 
-    /**
-     * Future TikTok mapping:
-     *
-     * C1MjC.stopCapture()
-     */
-    fun stopCapture() {
+    override fun stopCapture() {
         backend.stopCapture()
     }
 
-    /**
-     * Final backend cleanup.
-     */
-    fun close() {
+    override fun close() {
         backend.close()
         outputSurface = null
     }

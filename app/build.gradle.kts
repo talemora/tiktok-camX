@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.ectric.cameraxchecker"
+    namespace = "com.talemora.cameraxchecker"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.ectric.cameraxchecker"
+        applicationId = "com.talemora.cameraxchecker"
         minSdk = 26
         targetSdk = 37
         versionCode = 1

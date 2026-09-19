@@ -1,4 +1,4 @@
-package com.ectric.cameraxchecker.ui.theme
+package com.talemora.cameraxchecker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

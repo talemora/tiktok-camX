@@ -1,4 +1,4 @@
-package com.ectric.cameraxchecker
+package com.talemora.cameraxchecker
 
 import android.Manifest
 import android.content.ContentValues
@@ -44,7 +44,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ectric.cameraxchecker.ui.theme.CameraXCheckerTheme
+import com.talemora.cameraxchecker.ui.theme.CameraXCheckerTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -633,17 +633,20 @@ fun CameraPreview(
         TextureView(context)
     }
 
-    val tikTokBackend = remember(context) {
-        TikTokCameraXBackend(
+    val tikTokAdapter = remember(context) {
+        TikTokCameraAdapter(
             context = context
         )
     }
+
     var backendSurface by remember {
         mutableStateOf<Surface?>(null)
     }
 
-    DisposableEffect(textureView, tikTokBackend) {
+    DisposableEffect(textureView, tikTokAdapter) {
+
         val listener = object : TextureView.SurfaceTextureListener {
+
             override fun onSurfaceTextureAvailable(
                 surfaceTexture: SurfaceTexture,
                 width: Int,
@@ -651,8 +654,9 @@ fun CameraPreview(
             ) {
                 backendSurface?.release()
                 backendSurface = Surface(surfaceTexture)
+
                 Log.d(
-                    "TikTokCameraXBackend",
+                    "TikTokCameraAdapter",
                     "TextureView surface available: ${width}x${height}"
                 )
             }
@@ -663,7 +667,7 @@ fun CameraPreview(
                 height: Int
             ) {
                 Log.d(
-                    "TikTokCameraXBackend",
+                    "TikTokCameraAdapter",
                     "TextureView surface changed: ${width}x${height}"
                 )
             }
@@ -671,9 +675,11 @@ fun CameraPreview(
             override fun onSurfaceTextureDestroyed(
                 surfaceTexture: SurfaceTexture
             ): Boolean {
-                tikTokBackend.stopCapture()
+                tikTokAdapter.stopCapture()
+
                 backendSurface?.release()
                 backendSurface = null
+
                 return true
             }
 
@@ -686,14 +692,20 @@ fun CameraPreview(
 
         onDispose {
             textureView.surfaceTextureListener = null
-            tikTokBackend.close()
+
+            tikTokAdapter.close()
+
             backendSurface?.release()
             backendSurface = null
         }
     }
 
-    LaunchedEffect(backendSurface, lensFacing) {
-        val surface = backendSurface ?: return@LaunchedEffect
+    LaunchedEffect(
+        backendSurface,
+        lensFacing
+    ) {
+        val surface =
+            backendSurface ?: return@LaunchedEffect
 
         val facing =
             if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
@@ -702,13 +714,14 @@ fun CameraPreview(
                 TikTokCameraXBackend.Facing.BACK
             }
 
-        tikTokBackend.open(facing) {
-            tikTokBackend.startCapture(
-                surface = surface,
-                facing = facing
-            )
+        tikTokAdapter.setOutputSurface(surface)
 
-            val zoomRange = tikTokBackend.getZoomRange()
+        tikTokAdapter.open(facing) {
+
+            tikTokAdapter.startCapture()
+
+            val zoomRange =
+                tikTokAdapter.getZoomRange()
 
             if (zoomRange != null) {
                 onZoomLimitsDetected(
@@ -716,17 +729,18 @@ fun CameraPreview(
                     zoomRange.second
                 )
             }
+
             onBindingComplete()
 
             Log.d(
-                "TikTokCameraXBackend",
-                "Backend started with external Surface, facing=$facing"
+                "TikTokCameraAdapter",
+                "Adapter started with external Surface, facing=$facing"
             )
         }
     }
 
     LaunchedEffect(zoomRatio) {
-        tikTokBackend.setZoom(zoomRatio)
+        tikTokAdapter.setZoom(zoomRatio)
     }
 
     AndroidView(

@@ -1,4 +1,4 @@
-package com.ectric.cameraxchecker
+package com.talemora.cameraxchecker
 
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector

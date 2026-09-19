@@ -1,4 +1,4 @@
-package com.ectric.cameraxchecker
+package com.talemora.cameraxchecker
 
 import android.content.Context
 import android.util.Log

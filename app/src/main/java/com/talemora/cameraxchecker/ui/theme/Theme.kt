@@ -1,4 +1,4 @@
-package com.ectric.cameraxchecker.ui.theme
+package com.talemora.cameraxchecker.ui.theme
 
 import android.app.Activity
 import android.os.Build
